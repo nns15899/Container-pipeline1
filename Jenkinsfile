@@ -1,9 +1,8 @@
-node {
-    def app
-
+pipeline {
+    agent any
+    stages {
     stage('Clone repository') {
       
-
         checkout scm
     }
 
@@ -17,12 +16,18 @@ node {
         
     }
 
+    stage('Push image to DockerHub') {
+        steps {
+            withDockerRegistry([credentialsId: "dockerHub", url: "" ]) {
 
-    stage('Push image') {
-        
-        docker.withRegistry('https://registry.hub.docker.com', 'git') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
+                sh 'docker push nns15899/m1test'          
+            }         
         }
+    }
+    stage ('run Docker container on jenkins agent') {
+        steps {
+            sh 'docker run -d -p 8023:80 deb_apache1 nns15899/m1test'
+        }
+    }
     }
 }
