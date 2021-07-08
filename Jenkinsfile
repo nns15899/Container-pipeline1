@@ -7,18 +7,16 @@ node {
         checkout scm
     }
 
-    stage('Build image') {
+    stage('Docker build') {
   
-       app = docker.build("nns15899/m1test")
-    }
-
-    stage('Test image') {
-  
-
-        app.inside {
-            sh 'echo "Tests passed"'
+        steps {
+            sh 'docker build -t deb_apache1 .'
+            sh 'docker tag deb_apache nns15899/m1test'
+            
         }
+        
     }
+
 
     stage('Push image') {
         
